@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Running Tracker</title>
+        <!--Link to the css file for stylin-->
+        <link rel="stylesheet" href="styles.css">
+    </head>
+    <body>
+        <h1>Running Tracker</h1>
+        <div id="app">
+            <!--Form for logging a run-->
+            <form id="run-form">
+                <label>
+                    Date:
+                    <input type="date" id="date" required>
+                </label><br><br>
+                <label>
+                    Distance (miles):
+                    <input type="number" id="distance" step="0.01" min="0" required>
+                </label><br><br>
+                <label>
+                    Effort (1-10):
+                    <input type="number" id="effort" min="1" max="10" required>
+                </label><br><br>
+                <label>
+                    Notes:
+                    <input type="text" id="notes">
+                </label><br><br>
+                <button type="submit">Log Run</button>
+            </form>
+            <hr>
+            <h2>Logged Runs</h2>
+            <!--List to Display Runs-->
+            <ul id="run-list"></ul>
+        </div>
+        <!--Linkt to renderer script-->
+        <script src ="renderer.js"></script>
+    </body>
+</html>
