@@ -1,39 +1,181 @@
 <!DOCTYPE html>
 <html>
     <head>
+        <meta charset="UTF-8">
         <title>Running Tracker</title>
         <!--Link to the css file for stylin-->
         <link rel="stylesheet" href="styles.css">
+        <!-- Add Chart.js for data visualization -->
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     </head>
     <body>
-        <h1>Running Tracker</h1>
         <div id="app">
-            <!--Form for logging a run-->
+            <h1><span class="feet-icon" aria-label="Running Feet" title="Running">🏃‍♂️</span> Running Tracker</h1>
+            
+            <!-- Unit Toggle -->
+            <div class="unit-toggle">
+                <button id="unit-toggle-btn" class="toggle-btn">Switch to Kilometers</button>
+            </div>
+            
+            <!-- Statistics Section -->
+            <div id="stats-section" class="stats-section">
+                <h2>Running Statistics</h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3>Total Runs</h3>
+                        <p id="total-runs">0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Total Distance</h3>
+                        <p id="total-distance">0 miles</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Average Pace</h3>
+                        <p id="avg-pace">0:00 /mile</p>
+                    </div>
+                </div>
+                <div class="charts-container">
+                    <div class="chart-wrapper">
+                        <div style="display: flex; justify-content: flex-end; margin-bottom: 8px;">
+                            <button id="mileage-view-toggle" class="toggle-btn">Switch to Monthly View</button>
+                        </div>
+                        <canvas id="distance-chart"></canvas>
+                    </div>
+                    <div class="chart-wrapper">
+                        <canvas id="category-chart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-wrapper" style="margin-top: 20px;">
+                    <canvas id="week-month-chart"></canvas>
+                </div>
+            </div>
+
+            <!-- Goals Section -->
+            <div id="goals-section" class="goals-section">
+                <h2>Running Goals</h2>
+                <div class="goals-grid" id="goals-grid">
+                    <!-- Goals will be populated here -->
+                </div>
+                <button id="add-goal-btn" class="add-goal-btn">Add New Goal</button>
+            </div>
+
+            <!-- Run Form -->
             <form id="run-form">
-                <label>
-                    Date:
+                <input type="hidden" id="run-id">
+                
+                <div class="form-group">
+                    <label for="date">Date</label>
                     <input type="date" id="date" required>
-                </label><br><br>
-                <label>
-                    Distance (miles):
+                </div>
+
+                <div class="form-group">
+                    <label for="distance">Distance (<span id="distance-unit">miles</span>)</label>
                     <input type="number" id="distance" step="0.01" min="0" required>
-                </label><br><br>
-                <label>
-                    Effort (1-10):
+                </div>
+
+                <div class="form-group">
+                    <label>Duration</label>
+                    <div class="duration-inputs">
+                        <input type="number" id="hours" min="0" placeholder="Hours">
+                        <input type="number" id="minutes" min="0" max="59" placeholder="Minutes">
+                        <input type="number" id="seconds" min="0" max="59" placeholder="Seconds">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="category">Run Category</label>
+                    <select id="category" required>
+                        <option value="">Select a category</option>
+                        <option value="Easy Run">Easy Run</option>
+                        <option value="Tempo Run">Tempo Run</option>
+                        <option value="Intervals">Intervals</option>
+                        <option value="Long Run">Long Run</option>
+                        <option value="Race">Race</option>
+                        <option value="Aerobic">Aerobic</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="effort">Effort (1-10)</label>
                     <input type="number" id="effort" min="1" max="10" required>
-                </label><br><br>
-                <label>
-                    Notes:
-                    <input type="text" id="notes">
-                </label><br><br>
-                <button type="submit">Log Run</button>
+                </div>
+
+                <!-- Weather Conditions -->
+                <div class="form-group">
+                    <label>Weather Conditions (Optional)</label>
+                    <div class="weather-inputs">
+                        <div class="weather-input-group">
+                            <input type="number" id="weather-temp" step="0.1" placeholder="Temperature (Fahrenheit)">
+                            <select id="weather-condition">
+                                <option value="">Select condition</option>
+                                <option value="Sunny">Sunny</option>
+                                <option value="Cloudy">Cloudy</option>
+                                <option value="Rainy">Rainy</option>
+                                <option value="Snowy">Snowy</option>
+                                <option value="Windy">Windy</option>
+                                <option value="Foggy">Foggy</option>
+                            </select>
+                            <input type="number" id="weather-humidity" min="0" max="100" placeholder="Humidity (%)">
+                            <input type="number" id="weather-wind" step="0.1" placeholder="Wind Speed (mph)">
+                        </div>
+                        <button type="button" id="get-weather-btn" class="get-weather-btn">Get Current Weather</button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="notes">Notes</label>
+                    <textarea id="notes" rows="3"></textarea>
+                </div>
+
+                <div class="button-group">
+                    <button type="submit" id="submit-btn">Add Run</button>
+                    <button type="button" id="cancel-btn" style="display: none;">Cancel</button>
+                </div>
             </form>
-            <hr>
-            <h2>Logged Runs</h2>
-            <!--List to Display Runs-->
-            <ul id="run-list"></ul>
+
+            <!-- Run List -->
+            <div id="run-list"></div>
         </div>
-        <!--Linkt to renderer script-->
-        <script src ="renderer.js"></script>
+
+        <!-- Goal Modal -->
+        <div id="goal-modal" class="modal">
+            <div class="modal-content">
+                <h2>Add New Goal</h2>
+                <form id="goal-form">
+                    <div class="form-group">
+                        <label for="goal-type">Goal Type</label>
+                        <select id="goal-type" required>
+                            <option value="">Select type</option>
+                            <option value="distance">Total Distance</option>
+                            <option value="runs">Number of Runs</option>
+                            <option value="pace">Target Pace</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="goal-target">Target Value</label>
+                        <input type="number" id="goal-target" step="0.01" min="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="goal-start">Start Date</label>
+                        <input type="date" id="goal-start" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="goal-end">End Date</label>
+                        <input type="date" id="goal-end" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="goal-notes">Notes</label>
+                        <textarea id="goal-notes" rows="2"></textarea>
+                    </div>
+                    <div class="button-group">
+                        <button type="submit">Save Goal</button>
+                        <button type="button" id="close-goal-modal">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <script src="renderer.js"></script>
     </body>
 </html>
