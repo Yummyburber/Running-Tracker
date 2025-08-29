@@ -1,6 +1,6 @@
 # Running Tracker
 
-A simple cross-platform desktop app to log your runs, track effort and distance, and manage your running history. Built with Electron, JavaScript, HTML, CSS, and SQLite.
+A simple cross-platform desktop app to log your runs, track effort and distance, and manage your running history. Built with JavaScript, HTML, CSS, and SQLite.
 
 ## Features
 
